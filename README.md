@@ -15,6 +15,12 @@ python -m src.pipeline.cli --demo --scene-id demo_room --output-dir outputs\demo
 python -m unittest discover -s tests
 ```
 
+For your own images, place them under `data/inputs/` and run:
+
+```powershell
+python -m src.pipeline.cli --inputs data\inputs\room_001.jpg --scene-id room_001 --output-dir outputs\room_001
+```
+
 The demo command writes:
 
 - `outputs/demo_room/scene_initialization/demo_room.init.json`
