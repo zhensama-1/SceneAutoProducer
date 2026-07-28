@@ -1,0 +1,20 @@
+{
+  "scene_id": "demo_room",
+  "passed": true,
+  "checks": {
+    "major_objects_are_independent": true,
+    "collections_are_named": true,
+    "materials_are_editable": true,
+    "grounded_constraints_exist": true,
+    "architecture_is_procedural": true,
+    "script_is_generated": true,
+    "blend_output_declared": true
+  },
+  "warnings": [],
+  "errors": [],
+  "output_files": {
+    "script": "C:\\Users\\\u5218\u9707\\OneDrive\\\u6587\u6863\\New project 2\\outputs\\demo_room\\blender_scripts\\demo_room.build_scene.py",
+    "blend": "C:\\Users\\\u5218\u9707\\OneDrive\\\u6587\u6863\\New project 2\\outputs\\demo_room\\demo_room.blend",
+    "preview": "C:\\Users\\\u5218\u9707\\OneDrive\\\u6587\u6863\\New project 2\\outputs\\demo_room\\renders\\demo_room.preview.png"
+  }
+}
