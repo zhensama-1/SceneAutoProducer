@@ -1,0 +1,9 @@
+[project]
+name = "editable-2d-to-blender-scene"
+version = "0.1.0"
+description = "Semantic 2D image to editable Blender scene pipeline"
+requires-python = ">=3.10"
+dependencies = []
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
