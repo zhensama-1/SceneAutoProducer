@@ -1,0 +1,153 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://local/editable-2d-to-blender/blender_scene_ir.schema.json",
+  "title": "Editable Blender Scene IR",
+  "type": "object",
+  "required": ["scene", "objects", "materials", "relations", "camera", "lights", "constraints"],
+  "properties": {
+    "scene": {
+      "type": "object",
+      "required": ["id", "unit", "output_blend"],
+      "properties": {
+        "id": { "type": "string" },
+        "unit": { "type": "string", "default": "meters" },
+        "output_blend": { "type": "string" },
+        "preview_render": { "type": "string" },
+        "exports": {
+          "type": "array",
+          "items": { "enum": ["glb", "fbx", "obj"] }
+        },
+        "collections": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      },
+      "additionalProperties": true
+    },
+    "objects": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "category", "collection", "object_type", "transform", "dimensions", "material_id"],
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "category": { "type": "string" },
+          "collection": { "type": "string" },
+          "object_type": { "enum": ["mesh", "primitive", "asset", "procedural"] },
+          "transform": { "$ref": "#/$defs/transform" },
+          "dimensions": { "$ref": "#/$defs/vec3" },
+          "material_id": { "type": "string" },
+          "source_path": { "type": ["string", "null"] },
+          "primitive": { "type": ["object", "null"] },
+          "asset": { "type": ["object", "null"] },
+          "procedural": { "type": ["object", "null"] },
+          "editable_parts": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "metadata": { "type": "object" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "materials": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "base_color", "roughness", "metallic"],
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "base_color": {
+            "type": "array",
+            "minItems": 4,
+            "maxItems": 4,
+            "items": { "type": "number" }
+          },
+          "roughness": { "type": "number", "minimum": 0, "maximum": 1 },
+          "metallic": { "type": "number", "minimum": 0, "maximum": 1 },
+          "alpha": { "type": "number", "minimum": 0, "maximum": 1 },
+          "texture_path": { "type": ["string", "null"] },
+          "normal_map_path": { "type": ["string", "null"] }
+        },
+        "additionalProperties": false
+      }
+    },
+    "relations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["subject", "relation", "target"],
+        "properties": {
+          "subject": { "type": "string" },
+          "relation": { "type": "string" },
+          "target": { "type": "string" },
+          "confidence": { "type": "number", "minimum": 0, "maximum": 1 }
+        },
+        "additionalProperties": false
+      }
+    },
+    "camera": {
+      "type": "object",
+      "required": ["name", "position", "rotation_euler"],
+      "properties": {
+        "name": { "type": "string" },
+        "position": { "$ref": "#/$defs/vec3" },
+        "rotation_euler": { "$ref": "#/$defs/vec3" },
+        "focal_length": { "type": "number" },
+        "sensor_width": { "type": "number" }
+      },
+      "additionalProperties": false
+    },
+    "lights": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "light_type", "position"],
+        "properties": {
+          "name": { "type": "string" },
+          "light_type": { "enum": ["AREA", "POINT", "SUN", "SPOT"] },
+          "position": { "$ref": "#/$defs/vec3" },
+          "rotation_euler": { "$ref": "#/$defs/vec3" },
+          "energy": { "type": "number" },
+          "size": { "type": "number" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "constraints": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["object_id", "kind"],
+        "properties": {
+          "object_id": { "type": "string" },
+          "kind": { "type": "string" },
+          "target": { "type": ["string", "null"] },
+          "parameters": { "type": "object" }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "$defs": {
+    "vec3": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "items": { "type": "number" }
+    },
+    "transform": {
+      "type": "object",
+      "required": ["position", "rotation_euler", "scale"],
+      "properties": {
+        "position": { "$ref": "#/$defs/vec3" },
+        "rotation_euler": { "$ref": "#/$defs/vec3" },
+        "scale": { "$ref": "#/$defs/vec3" }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}
