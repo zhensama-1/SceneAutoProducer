@@ -1,0 +1,90 @@
+{
+  "scene_id": "demo_room",
+  "unit": "meters",
+  "objects": [
+    {
+      "id": "table_01",
+      "category": "table",
+      "mask_path": "C:\\Users\\\u5218\u9707\\OneDrive\\\u6587\u6863\\New project 2\\outputs\\demo_room\\masks\\table_01.png",
+      "mesh_path": "C:\\Users\\\u5218\u9707\\OneDrive\\\u6587\u6863\\New project 2\\outputs\\demo_room\\recon\\table_01.obj",
+      "bbox_2d": [
+        210,
+        250,
+        470,
+        390
+      ],
+      "position": [
+        0.0,
+        0.0,
+        0.38
+      ],
+      "rotation_euler": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        1.5,
+        0.8,
+        0.75
+      ],
+      "confidence": 0.91
+    },
+    {
+      "id": "chair_01",
+      "category": "chair",
+      "mask_path": "C:\\Users\\\u5218\u9707\\OneDrive\\\u6587\u6863\\New project 2\\outputs\\demo_room\\masks\\chair_01.png",
+      "mesh_path": "C:\\Users\\\u5218\u9707\\OneDrive\\\u6587\u6863\\New project 2\\outputs\\demo_room\\recon\\chair_01.obj",
+      "bbox_2d": [
+        110,
+        255,
+        220,
+        440
+      ],
+      "position": [
+        -0.95,
+        -0.1,
+        0.45
+      ],
+      "rotation_euler": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        0.55,
+        0.55,
+        0.9
+      ],
+      "confidence": 0.84
+    },
+    {
+      "id": "cabinet_01",
+      "category": "cabinet",
+      "mask_path": "C:\\Users\\\u5218\u9707\\OneDrive\\\u6587\u6863\\New project 2\\outputs\\demo_room\\masks\\cabinet_01.png",
+      "mesh_path": "C:\\Users\\\u5218\u9707\\OneDrive\\\u6587\u6863\\New project 2\\outputs\\demo_room\\recon\\cabinet_01.obj",
+      "bbox_2d": [
+        510,
+        180,
+        690,
+        430
+      ],
+      "position": [
+        1.65,
+        0.18,
+        0.75
+      ],
+      "rotation_euler": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        0.9,
+        0.45,
+        1.5
+      ],
+      "confidence": 0.82
+    }
+  ]
+}
