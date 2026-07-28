@@ -1,0 +1,30 @@
+{
+  "assets": [
+    {
+      "asset_id": "chair_basic_wood_01",
+      "category": "chair",
+      "style": "generic",
+      "materials": ["wood", "fabric"],
+      "dimensions": [0.48, 0.52, 0.86],
+      "path": "assets/models/chair_basic_wood_01.glb",
+      "license": "placeholder-metadata-only",
+      "editable_parts": ["seat", "back", "leg_FL", "leg_FR", "leg_BL", "leg_BR"],
+      "poly_count": 12000,
+      "origin": "local-placeholder",
+      "tags": ["dining", "editable"]
+    },
+    {
+      "asset_id": "lamp_table_round_01",
+      "category": "lamp",
+      "style": "generic",
+      "materials": ["metal", "fabric"],
+      "dimensions": [0.28, 0.28, 0.55],
+      "path": "assets/models/lamp_table_round_01.glb",
+      "license": "placeholder-metadata-only",
+      "editable_parts": ["base", "stem", "shade"],
+      "poly_count": 8000,
+      "origin": "local-placeholder",
+      "tags": ["tabletop", "warm"]
+    }
+  ]
+}
