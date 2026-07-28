@@ -1,0 +1,487 @@
+{
+  "scene": {
+    "id": "demo_room",
+    "unit": "meters",
+    "output_blend": "C:\\Users\\\u5218\u9707\\OneDrive\\\u6587\u6863\\New project 2\\outputs\\demo_room\\demo_room.blend",
+    "preview_render": "C:\\Users\\\u5218\u9707\\OneDrive\\\u6587\u6863\\New project 2\\outputs\\demo_room\\renders\\demo_room.preview.png",
+    "exports": [],
+    "collections": [
+      "Architecture",
+      "Editable_Objects"
+    ]
+  },
+  "objects": [
+    {
+      "id": "floor_01",
+      "name": "floor_01",
+      "category": "floor",
+      "collection": "Architecture",
+      "object_type": "procedural",
+      "transform": {
+        "position": [
+          0.0,
+          0.0,
+          -0.02
+        ],
+        "rotation_euler": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "dimensions": [
+        4.4,
+        3.4,
+        0.04
+      ],
+      "material_id": "mat_floor",
+      "source_path": null,
+      "primitive": null,
+      "asset": null,
+      "procedural": {
+        "kind": "floor",
+        "dimensions": [
+          4.4,
+          3.4,
+          0.04
+        ],
+        "bevel": 0.0
+      },
+      "editable_parts": [
+        "floor_slab"
+      ],
+      "metadata": {}
+    },
+    {
+      "id": "back_wall_01",
+      "name": "back_wall_01",
+      "category": "wall",
+      "collection": "Architecture",
+      "object_type": "procedural",
+      "transform": {
+        "position": [
+          0.0,
+          1.72,
+          1.35
+        ],
+        "rotation_euler": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "dimensions": [
+        4.4,
+        0.08,
+        2.7
+      ],
+      "material_id": "mat_wall",
+      "source_path": null,
+      "primitive": null,
+      "asset": null,
+      "procedural": {
+        "kind": "wall",
+        "dimensions": [
+          4.4,
+          0.08,
+          2.7
+        ],
+        "bevel": 0.0
+      },
+      "editable_parts": [
+        "wall_panel"
+      ],
+      "metadata": {}
+    },
+    {
+      "id": "table_01",
+      "name": "table_01",
+      "category": "table",
+      "collection": "Editable_Objects",
+      "object_type": "procedural",
+      "transform": {
+        "position": [
+          0.0,
+          0.0,
+          0.375
+        ],
+        "rotation_euler": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "dimensions": [
+        1.5,
+        0.8,
+        0.75
+      ],
+      "material_id": "mat_table",
+      "source_path": null,
+      "primitive": null,
+      "asset": null,
+      "procedural": {
+        "kind": "table",
+        "dimensions": [
+          1.5,
+          0.8,
+          0.75
+        ],
+        "top_thickness": 0.08,
+        "leg_thickness": 0.064,
+        "bevel": 0.015
+      },
+      "editable_parts": [
+        "table_01_top",
+        "table_01_leg_FL",
+        "table_01_leg_FR",
+        "table_01_leg_BL",
+        "table_01_leg_BR"
+      ],
+      "metadata": {
+        "source_mask": "C:\\Users\\\u5218\u9707\\OneDrive\\\u6587\u6863\\New project 2\\outputs\\demo_room\\masks\\table_01.png",
+        "source_bbox_2d": [
+          210,
+          250,
+          470,
+          390
+        ],
+        "source_confidence": 0.91,
+        "asset_strategy": "procedural_modeling"
+      }
+    },
+    {
+      "id": "chair_01",
+      "name": "chair_01",
+      "category": "chair",
+      "collection": "Editable_Objects",
+      "object_type": "asset",
+      "transform": {
+        "position": [
+          -0.95,
+          -0.1,
+          0.45
+        ],
+        "rotation_euler": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "dimensions": [
+        0.55,
+        0.55,
+        0.9
+      ],
+      "material_id": "mat_chair",
+      "source_path": null,
+      "primitive": null,
+      "asset": {
+        "asset_id": "chair_basic_wood_01",
+        "category": "chair",
+        "style": "generic",
+        "materials": [
+          "wood",
+          "fabric"
+        ],
+        "dimensions": [
+          0.48,
+          0.52,
+          0.86
+        ],
+        "path": "assets/models/chair_basic_wood_01.glb",
+        "license": "placeholder-metadata-only",
+        "editable_parts": [
+          "seat",
+          "back",
+          "leg_FL",
+          "leg_FR",
+          "leg_BL",
+          "leg_BR"
+        ],
+        "poly_count": 12000,
+        "origin": "local-placeholder",
+        "tags": [
+          "dining",
+          "editable"
+        ]
+      },
+      "procedural": null,
+      "editable_parts": [
+        "seat",
+        "back",
+        "leg_FL",
+        "leg_FR",
+        "leg_BL",
+        "leg_BR"
+      ],
+      "metadata": {
+        "source_mask": "C:\\Users\\\u5218\u9707\\OneDrive\\\u6587\u6863\\New project 2\\outputs\\demo_room\\masks\\chair_01.png",
+        "source_bbox_2d": [
+          110,
+          255,
+          220,
+          440
+        ],
+        "source_confidence": 0.84,
+        "asset_strategy": "replace_with_asset"
+      }
+    },
+    {
+      "id": "cabinet_01",
+      "name": "cabinet_01",
+      "category": "cabinet",
+      "collection": "Editable_Objects",
+      "object_type": "procedural",
+      "transform": {
+        "position": [
+          1.65,
+          0.18,
+          0.75
+        ],
+        "rotation_euler": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "dimensions": [
+        0.9,
+        0.45,
+        1.5
+      ],
+      "material_id": "mat_cabinet",
+      "source_path": null,
+      "primitive": null,
+      "asset": null,
+      "procedural": {
+        "kind": "cabinet",
+        "dimensions": [
+          0.9,
+          0.45,
+          1.5
+        ],
+        "shelf_count": 4,
+        "board_thickness": 0.045,
+        "bevel": 0.01
+      },
+      "editable_parts": [
+        "cabinet_01_body",
+        "cabinet_01_shelf_01",
+        "cabinet_01_shelf_02",
+        "cabinet_01_shelf_03"
+      ],
+      "metadata": {
+        "source_mask": "C:\\Users\\\u5218\u9707\\OneDrive\\\u6587\u6863\\New project 2\\outputs\\demo_room\\masks\\cabinet_01.png",
+        "source_bbox_2d": [
+          510,
+          180,
+          690,
+          430
+        ],
+        "source_confidence": 0.82,
+        "asset_strategy": "procedural_modeling"
+      }
+    }
+  ],
+  "materials": [
+    {
+      "id": "mat_floor",
+      "name": "floor_editable_material",
+      "base_color": [
+        0.55,
+        0.48,
+        0.38,
+        1.0
+      ],
+      "roughness": 0.62,
+      "metallic": 0.0,
+      "alpha": 1.0,
+      "texture_path": null,
+      "normal_map_path": null
+    },
+    {
+      "id": "mat_wall",
+      "name": "wall_editable_material",
+      "base_color": [
+        0.78,
+        0.8,
+        0.77,
+        1.0
+      ],
+      "roughness": 0.62,
+      "metallic": 0.0,
+      "alpha": 1.0,
+      "texture_path": null,
+      "normal_map_path": null
+    },
+    {
+      "id": "mat_table",
+      "name": "table_editable_material",
+      "base_color": [
+        0.48,
+        0.3,
+        0.18,
+        1.0
+      ],
+      "roughness": 0.48,
+      "metallic": 0.0,
+      "alpha": 1.0,
+      "texture_path": null,
+      "normal_map_path": null
+    },
+    {
+      "id": "mat_chair",
+      "name": "chair_editable_material",
+      "base_color": [
+        0.18,
+        0.22,
+        0.28,
+        1.0
+      ],
+      "roughness": 0.48,
+      "metallic": 0.0,
+      "alpha": 1.0,
+      "texture_path": null,
+      "normal_map_path": null
+    },
+    {
+      "id": "mat_cabinet",
+      "name": "cabinet_editable_material",
+      "base_color": [
+        0.58,
+        0.54,
+        0.46,
+        1.0
+      ],
+      "roughness": 0.48,
+      "metallic": 0.0,
+      "alpha": 1.0,
+      "texture_path": null,
+      "normal_map_path": null
+    }
+  ],
+  "relations": [
+    {
+      "subject": "table_01",
+      "relation": "on",
+      "target": "floor_01",
+      "confidence": 0.88
+    },
+    {
+      "subject": "chair_01",
+      "relation": "on",
+      "target": "floor_01",
+      "confidence": 0.88
+    },
+    {
+      "subject": "cabinet_01",
+      "relation": "on",
+      "target": "floor_01",
+      "confidence": 0.88
+    }
+  ],
+  "camera": {
+    "name": "camera_main",
+    "position": [
+      3.3,
+      -4.4,
+      2.1
+    ],
+    "rotation_euler": [
+      1.15,
+      0.0,
+      0.63
+    ],
+    "focal_length": 32.0,
+    "sensor_width": 32.0
+  },
+  "lights": [
+    {
+      "name": "key_area_light",
+      "light_type": "AREA",
+      "position": [
+        -2.2,
+        -3.2,
+        4.2
+      ],
+      "rotation_euler": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "energy": 520.0,
+      "size": 4.0
+    },
+    {
+      "name": "soft_fill_light",
+      "light_type": "POINT",
+      "position": [
+        2.8,
+        1.6,
+        2.8
+      ],
+      "rotation_euler": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "energy": 80.0,
+      "size": 1.0
+    }
+  ],
+  "constraints": [
+    {
+      "object_id": "table_01",
+      "kind": "grounded",
+      "target": "floor_01",
+      "parameters": {
+        "min_z": 0.0,
+        "snap_bottom_to_floor": true
+      }
+    },
+    {
+      "object_id": "chair_01",
+      "kind": "grounded",
+      "target": "floor_01",
+      "parameters": {
+        "min_z": 0.0,
+        "snap_bottom_to_floor": true
+      }
+    },
+    {
+      "object_id": "cabinet_01",
+      "kind": "grounded",
+      "target": "floor_01",
+      "parameters": {
+        "min_z": 0.0,
+        "snap_bottom_to_floor": true
+      }
+    }
+  ]
+}
