@@ -1,17 +1,11 @@
 from __future__ import annotations
 
 import argparse
-import json
-import shutil
-import subprocess
 import sys
 from pathlib import Path
 
-from src.asset_retrieval import AssetLibrary
-from src.bpy_compiler import BlenderCodeCompiler, CodeRepairAgent
 from src.scene_initialization import SceneInitializer
-from src.scene_planner import ScenePlannerAgent
-from src.validation import validate_outputs
+from src.pipeline.step2_loop import run_step2_multi_agent_loop
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
@@ -23,6 +17,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--asset-metadata", default="assets/metadata/assets.json", help="Asset metadata JSON.")
     parser.add_argument("--scene-style", default="neutral", choices=["neutral", "warm"], help="Material/style hint.")
     parser.add_argument("--export", action="append", choices=["glb", "fbx", "obj"], default=[], help="Optional export format.")
+    parser.add_argument("--step2-iterations", type=int, default=3, help="Maximum Step 2 multi-agent refinement iterations.")
     parser.add_argument("--run-blender", action="store_true", help="Execute generated script with Blender.")
     parser.add_argument("--blender-exe", default="blender", help="Blender executable path.")
     return parser.parse_args(argv)
@@ -31,10 +26,6 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
 def run_pipeline(args: argparse.Namespace) -> dict[str, Path]:
     output_root = Path(args.output_dir).resolve()
     init_dir = output_root / "scene_initialization"
-    ir_dir = output_root / "scene_ir"
-    script_dir = output_root / "blender_scripts"
-    report_dir = output_root / "reports"
-
     initializer = SceneInitializer()
     if args.demo:
         initialization = initializer.demo_initialization(args.scene_id, output_root)
@@ -50,50 +41,21 @@ def run_pipeline(args: argparse.Namespace) -> dict[str, Path]:
     init_path = init_dir / f"{args.scene_id}.init.json"
     initializer.write(initialization, init_path)
 
-    asset_library = AssetLibrary.load(Path(args.asset_metadata).resolve())
-    planner = ScenePlannerAgent(asset_library=asset_library, scene_style=args.scene_style)
-    ir = planner.plan(initialization, output_root, exports=args.export)
-    ir_path = ir_dir / f"{args.scene_id}.scene_ir.json"
-    ir_path.parent.mkdir(parents=True, exist_ok=True)
-    ir_path.write_text(json.dumps(ir.to_dict(), indent=2), encoding="utf-8")
-
-    script_path = script_dir / f"{args.scene_id}.build_scene.py"
-    BlenderCodeCompiler().compile(ir, script_path)
-
-    blend_path = Path(ir.scene["output_blend"])
-    if args.run_blender:
-        execute_blender(args.blender_exe, script_path)
-        if not blend_path.exists():
-            raise RuntimeError(f"Blender finished but did not create {blend_path}")
-
-    report = validate_outputs(ir, script_path=script_path, blend_path=blend_path if args.run_blender else None)
-    report.write(
-        report_dir / f"{args.scene_id}.validation.json",
-        report_dir / f"{args.scene_id}.validation.md",
+    step2_outputs = run_step2_multi_agent_loop(
+        initialization=initialization,
+        output_root=output_root,
+        asset_metadata_path=Path(args.asset_metadata).resolve(),
+        scene_style=args.scene_style,
+        exports=args.export,
+        iterations=getattr(args, "step2_iterations", 3),
+        run_blender=args.run_blender,
+        blender_exe=args.blender_exe,
     )
-    return {
+    outputs = {
         "initialization": init_path,
-        "scene_ir": ir_path,
-        "script": script_path,
-        "report": report_dir / f"{args.scene_id}.validation.json",
-        "blend": blend_path,
     }
-
-
-def execute_blender(blender_exe: str, script_path: Path) -> None:
-    executable = shutil.which(blender_exe) or blender_exe
-    command = [executable, "--background", "--python", str(script_path)]
-    result = subprocess.run(command, capture_output=True, text=True, check=False)
-    if result.returncode == 0:
-        return
-    error_text = result.stderr + "\n" + result.stdout
-    repaired = CodeRepairAgent().repair(script_path, error_text)
-    if repaired:
-        retry = subprocess.run(command, capture_output=True, text=True, check=False)
-        if retry.returncode == 0:
-            return
-        error_text = retry.stderr + "\n" + retry.stdout
-    raise RuntimeError(error_text[-4000:])
+    outputs.update(step2_outputs)
+    return outputs
 
 
 def main(argv: list[str] | None = None) -> int:

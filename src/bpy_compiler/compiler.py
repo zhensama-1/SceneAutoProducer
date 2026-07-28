@@ -20,6 +20,8 @@ class BlenderCodeCompiler:
 # Source of truth: embedded Blender Scene IR JSON. Edit IR, then recompile this script.
 import json
 import math
+import sys
+import traceback
 from pathlib import Path
 
 import bpy
@@ -38,11 +40,25 @@ def clear_scene():
             bpy.data.materials.remove(material)
 
 
-def ensure_collection(name):
+REQUIRED_COLLECTIONS = ["Room", "Furniture", "Lighting", "Camera", "ReconstructedMeshes", "ProceduralObjects"]
+
+
+def log(message):
+    print("[SceneAutoProducer]", message)
+
+
+def ensure_collection(name, parent_name=None):
     collection = bpy.data.collections.get(name)
+    created = collection is None
     if collection is None:
         collection = bpy.data.collections.new(name)
-        bpy.context.scene.collection.children.link(collection)
+    if parent_name is None:
+        if created:
+            bpy.context.scene.collection.children.link(collection)
+        return collection
+    parent = ensure_collection(parent_name)
+    if not any(child.name == collection.name for child in parent.children):
+        parent.children.link(collection)
     return collection
 
 
@@ -51,6 +67,20 @@ def move_to_collection(obj, collection_name):
     for old_collection in list(obj.users_collection):
         old_collection.objects.unlink(obj)
     collection.objects.link(obj)
+
+
+def create_required_collections():
+    ensure_collection("Room")
+    for name in REQUIRED_COLLECTIONS:
+        if name != "Room":
+            ensure_collection(name, "Room")
+
+
+def set_custom_properties(obj, spec):
+    obj["source_object_id"] = spec.get("id", obj.name)
+    obj["category"] = spec.get("category", "unknown")
+    obj["generation_strategy"] = spec.get("metadata", {{}}).get("generation_strategy", spec.get("object_type", "unknown"))
+    obj["iteration"] = spec.get("metadata", {{}}).get("iteration", IR["scene"].get("iteration", 0))
 
 
 def create_material(spec):
@@ -85,7 +115,7 @@ def assign_material(obj, material):
         obj.data.materials.append(material)
 
 
-def cube_part(name, dimensions, local_position, material, collection_name, parent=None, bevel=0.0):
+def cube_part(name, dimensions, local_position, material, collection_name, parent=None, bevel=0.0, source_spec=None):
     bpy.ops.mesh.primitive_cube_add(size=1, location=(0, 0, 0))
     obj = bpy.context.object
     obj.name = name
@@ -95,6 +125,8 @@ def cube_part(name, dimensions, local_position, material, collection_name, paren
         obj.parent = parent
     obj.location = local_position
     assign_material(obj, material)
+    if source_spec:
+        set_custom_properties(obj, source_spec)
     move_to_collection(obj, collection_name)
     if bevel > 0:
         modifier = obj.modifiers.new(name="editable_bevel", type="BEVEL")
@@ -109,6 +141,7 @@ def create_empty_parent(spec):
     bpy.context.scene.collection.objects.link(empty)
     move_to_collection(empty, spec["collection"])
     apply_transform(empty, spec["transform"])
+    set_custom_properties(empty, spec)
     return empty
 
 
@@ -122,7 +155,7 @@ def create_table(spec, material):
     top_z = height / 2 - top_t / 2
     leg_z = -top_t / 2
     leg_h = max(0.05, height - top_t)
-    cube_part(spec["id"] + "_top", [width, depth, top_t], [0, 0, top_z], material, spec["collection"], parent, bevel)
+    cube_part(spec["id"] + "_top", [width, depth, top_t], [0, 0, top_z], material, spec["collection"], parent, bevel, spec)
     offsets = [
         ("FL", -width / 2 + leg_t, -depth / 2 + leg_t),
         ("FR", width / 2 - leg_t, -depth / 2 + leg_t),
@@ -130,7 +163,7 @@ def create_table(spec, material):
         ("BR", width / 2 - leg_t, depth / 2 - leg_t),
     ]
     for suffix, x, y in offsets:
-        cube_part(spec["id"] + "_leg_" + suffix, [leg_t, leg_t, leg_h], [x, y, leg_z - leg_h / 2], material, spec["collection"], parent, bevel)
+        cube_part(spec["id"] + "_leg_" + suffix, [leg_t, leg_t, leg_h], [x, y, leg_z - leg_h / 2], material, spec["collection"], parent, bevel, spec)
     return parent
 
 
@@ -141,20 +174,20 @@ def create_cabinet(spec, material):
     t = spec["procedural"].get("board_thickness", 0.045)
     bevel = spec["procedural"].get("bevel", 0.0)
     shelf_count = spec["procedural"].get("shelf_count", 3)
-    cube_part(spec["id"] + "_left_side", [t, depth, height], [-width / 2 + t / 2, 0, 0], material, spec["collection"], parent, bevel)
-    cube_part(spec["id"] + "_right_side", [t, depth, height], [width / 2 - t / 2, 0, 0], material, spec["collection"], parent, bevel)
-    cube_part(spec["id"] + "_top", [width, depth, t], [0, 0, height / 2 - t / 2], material, spec["collection"], parent, bevel)
-    cube_part(spec["id"] + "_bottom", [width, depth, t], [0, 0, -height / 2 + t / 2], material, spec["collection"], parent, bevel)
+    cube_part(spec["id"] + "_left_side", [t, depth, height], [-width / 2 + t / 2, 0, 0], material, spec["collection"], parent, bevel, spec)
+    cube_part(spec["id"] + "_right_side", [t, depth, height], [width / 2 - t / 2, 0, 0], material, spec["collection"], parent, bevel, spec)
+    cube_part(spec["id"] + "_top", [width, depth, t], [0, 0, height / 2 - t / 2], material, spec["collection"], parent, bevel, spec)
+    cube_part(spec["id"] + "_bottom", [width, depth, t], [0, 0, -height / 2 + t / 2], material, spec["collection"], parent, bevel, spec)
     for index in range(1, shelf_count + 1):
         z = -height / 2 + index * height / (shelf_count + 1)
-        cube_part(f"{{spec['id']}}_shelf_{{index:02d}}", [width - 2 * t, depth * 0.94, t], [0, 0, z], material, spec["collection"], parent, bevel)
+        cube_part(f"{{spec['id']}}_shelf_{{index:02d}}", [width - 2 * t, depth * 0.94, t], [0, 0, z], material, spec["collection"], parent, bevel, spec)
     return parent
 
 
 def create_box_procedural(spec, material):
     parent = create_empty_parent(spec)
     dims = spec["procedural"].get("dimensions", spec["dimensions"])
-    cube_part(spec["id"] + "_body", dims, [0, 0, 0], material, spec["collection"], parent, spec["procedural"].get("bevel", 0.0))
+    cube_part(spec["id"] + "_body", dims, [0, 0, 0], material, spec["collection"], parent, spec["procedural"].get("bevel", 0.0), spec)
     return parent
 
 
@@ -171,6 +204,7 @@ def create_primitive(spec, material):
     obj.dimensions = spec["dimensions"]
     apply_transform(obj, spec["transform"])
     assign_material(obj, material)
+    set_custom_properties(obj, spec)
     move_to_collection(obj, spec["collection"])
     return obj
 
@@ -183,28 +217,29 @@ def create_asset_proxy(spec, material):
         seat_h = min(0.10, height * 0.12)
         leg_t = min(0.06, max(0.035, width * 0.10))
         seat_z = -height / 2 + height * 0.45
-        cube_part(spec["id"] + "_seat", [width, depth, seat_h], [0, 0, seat_z], material, spec["collection"], parent, 0.012)
-        cube_part(spec["id"] + "_back", [width, leg_t, height * 0.52], [0, depth / 2 - leg_t / 2, seat_z + height * 0.28], material, spec["collection"], parent, 0.012)
+        cube_part(spec["id"] + "_seat", [width, depth, seat_h], [0, 0, seat_z], material, spec["collection"], parent, 0.012, spec)
+        cube_part(spec["id"] + "_back", [width, leg_t, height * 0.52], [0, depth / 2 - leg_t / 2, seat_z + height * 0.28], material, spec["collection"], parent, 0.012, spec)
         for suffix, x, y in [
             ("FL", -width / 2 + leg_t, -depth / 2 + leg_t),
             ("FR", width / 2 - leg_t, -depth / 2 + leg_t),
             ("BL", -width / 2 + leg_t, depth / 2 - leg_t),
             ("BR", width / 2 - leg_t, depth / 2 - leg_t),
         ]:
-            cube_part(spec["id"] + "_leg_" + suffix, [leg_t, leg_t, height * 0.45], [x, y, -height / 2 + height * 0.225], material, spec["collection"], parent, 0.008)
+            cube_part(spec["id"] + "_leg_" + suffix, [leg_t, leg_t, height * 0.45], [x, y, -height / 2 + height * 0.225], material, spec["collection"], parent, 0.008, spec)
         return parent
     if category == "lamp":
         parent = create_empty_parent(spec)
         width, depth, height = spec["dimensions"]
-        cube_part(spec["id"] + "_base", [width, depth, height * 0.08], [0, 0, -height / 2 + height * 0.04], material, spec["collection"], parent, 0.01)
+        cube_part(spec["id"] + "_base", [width, depth, height * 0.08], [0, 0, -height / 2 + height * 0.04], material, spec["collection"], parent, 0.01, spec)
         bpy.ops.mesh.primitive_cylinder_add(vertices=32, radius=min(width, depth) * 0.08, depth=height * 0.58, location=(0, 0, 0))
         stem = bpy.context.object
         stem.name = spec["id"] + "_stem"
         stem.parent = parent
         stem.location = [0, 0, -height * 0.10]
         assign_material(stem, material)
+        set_custom_properties(stem, spec)
         move_to_collection(stem, spec["collection"])
-        cube_part(spec["id"] + "_shade", [width * 0.85, depth * 0.85, height * 0.26], [0, 0, height * 0.28], material, spec["collection"], parent, 0.015)
+        cube_part(spec["id"] + "_shade", [width * 0.85, depth * 0.85, height * 0.26], [0, 0, height * 0.28], material, spec["collection"], parent, 0.015, spec)
         return parent
     obj = create_primitive({{**spec, "primitive": {{"type": "cube"}}}}, material)
     obj.name = spec["name"] + "_asset_proxy"
@@ -237,6 +272,7 @@ def import_or_placeholder(spec, material):
         obj.name = spec["id"] + f"_part_{{index:02d}}"
         obj.parent = parent
         assign_material(obj, material)
+        set_custom_properties(obj, spec)
         move_to_collection(obj, spec["collection"])
     return parent
 
@@ -263,6 +299,7 @@ def setup_camera(camera_spec):
     camera.data.lens = camera_spec.get("focal_length", 35.0)
     camera.data.sensor_width = camera_spec.get("sensor_width", 32.0)
     bpy.context.scene.camera = camera
+    move_to_collection(camera, "Camera")
 
 
 def setup_lights(light_specs):
@@ -275,6 +312,7 @@ def setup_lights(light_specs):
         bpy.context.scene.collection.objects.link(light)
         light.location = spec["position"]
         light.rotation_euler = spec.get("rotation_euler", [0, 0, 0])
+        move_to_collection(light, "Lighting")
 
 
 def export_scene(scene_spec):
@@ -302,20 +340,28 @@ def render_preview(scene_spec):
 
 
 def main():
+    log("clearing scene")
     clear_scene()
+    create_required_collections()
     for collection_name in IR["scene"].get("collections", []):
         ensure_collection(collection_name)
     materials = {{material["id"]: create_material(material) for material in IR["materials"]}}
     for spec in IR["objects"]:
+        log("creating " + spec["id"])
         create_object(spec, materials)
     setup_camera(IR["camera"])
     setup_lights(IR["lights"])
     Path(IR["scene"]["output_blend"]).parent.mkdir(parents=True, exist_ok=True)
+    log("saving blend to " + IR["scene"]["output_blend"])
     bpy.ops.wm.save_as_mainfile(filepath=IR["scene"]["output_blend"])
     export_scene(IR["scene"])
     render_preview(IR["scene"])
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except Exception:
+        traceback.print_exc()
+        sys.exit(1)
 '''
