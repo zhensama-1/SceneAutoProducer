@@ -1,0 +1,24 @@
+__pycache__/
+*.py[cod]
+*.pyo
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+env/
+
+# Generated Blender/runtime artifacts can be reproduced from Scene IR and scripts.
+*.blend
+*.blend1
+*.glb
+*.fbx
+*.mtl
+renders/*.png
+outputs/**/renders/*.png
+
+# Local OS/editor noise.
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
