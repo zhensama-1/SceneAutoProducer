@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "category_map": "configs/categories.json",
+  "synthetic": {
+    "source": "infinigen_indoors",
+    "manifest": "data/processed/infinigen_indoors/manifests/train.json"
+  },
+  "training": {
+    "furniture": {
+      "source": "deepfurniture",
+      "manifest": "data/processed/deepfurniture/manifests/train.json"
+    }
+  },
+  "assets": {
+    "sources": ["abo", "objaverse_oa"],
+    "metadata": "assets/metadata/assets.json",
+    "license_allowlist": ["CC0-1.0", "CC-BY-4.0"],
+    "reject_unknown_license": true,
+    "require_normalized_orientation": true,
+    "source_priority": ["abo", "objaverse_oa"]
+  },
+  "validation": {
+    "nyuv2": "data/processed/real_validation/manifests/nyuv2.json",
+    "custom": "data/processed/real_validation/manifests/custom.json"
+  }
+}
