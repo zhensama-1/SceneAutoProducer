@@ -17,6 +17,14 @@ env/
 renders/*.png
 outputs/**/renders/*.png
 
+# Downloaded/generated datasets and large asset payloads.
+data/raw/**
+!data/raw/.gitkeep
+data/processed/**
+!data/processed/.gitkeep
+assets/models/**
+assets/previews/**
+
 # Local OS/editor noise.
 .DS_Store
 Thumbs.db
