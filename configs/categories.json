@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "unknown": "unknown",
+  "categories": {
+    "chair": ["chair", "dining chair", "office chair", "armchair", "stool"],
+    "table": ["table", "dining table", "coffee table", "desk", "side table"],
+    "sofa": ["sofa", "couch", "loveseat"],
+    "bed": ["bed", "bunk bed"],
+    "cabinet": ["cabinet", "wardrobe", "cupboard", "dresser", "bookshelf"],
+    "lamp": ["lamp", "floor lamp", "table lamp", "light fixture"],
+    "television": ["television", "tv", "monitor"],
+    "rug": ["rug", "carpet"],
+    "plant": ["plant", "potted plant"],
+    "wall": ["wall"],
+    "floor": ["floor"],
+    "ceiling": ["ceiling"],
+    "door": ["door"],
+    "window": ["window"]
+  }
+}
