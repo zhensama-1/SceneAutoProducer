@@ -42,6 +42,16 @@ python -m src.pipeline.cli --demo --scene-id demo_room --output-dir outputs\demo
 The generated Blender script is repeatable and saves the `.blend` file declared in Scene IR.
 The standalone JSON Schema is available at `src/blender_ir/blender_scene_ir.schema.json`.
 
+## External datasets and asset libraries
+
+ABO, Objaverse-OA, Infinigen Indoors, DeepFurniture, NYUv2, and private
+real-domain validation data are integrated through a shared manifest and
+license-gated asset catalog. See `DATA_INTEGRATION.md` for preparation commands,
+directory rules, and the end-to-end preflight check.
+
+For acquisition, access applications, raw-data layouts, license boundaries, and
+first-batch acceptance checks, see `EXTERNAL_DATA_PREPARATION.md`.
+
 ## Architecture
 
 ```text
